@@ -7,20 +7,35 @@ import { Harmful } from 'src/entities/harmful.entitiy';
 export class PlantsController {
   constructor(private readonly plantsService: PlantService) {}
 
+  // 식물 정보 모두 가져오기
   @Get()
   async getAll(): Promise<Plant[]> {
     return this.plantsService.getAll();
   }
+
+  // 식물 정보 모두 가져오기
+  @Get('search')
+  async search(
+    @Query('name') name: string
+  ): Promise<Plant[]> {
+    return this.plantsService.search(name);
+  }
+
+  // 해당 식물 정보 가져오기
+  @Get(':id')
+  async getPlant(
+    @Param('id') id: number
+  ): Promise<Plant> {
+    return this.plantsService.getPlant(id);
+  }
   
   // 해당 동물의 식물목록 가져오기
-  @Get('to')
-  async getPlantsHarmfulToCat(
+  @Get('to/:type')
+  async getPlantsTo(
     @Param('type') type: 'cat' | 'dog',
-    @Param('level') level?: '00' | '10' | '20' | '30' | '40'
+    @Query('level') level?: '00' | '10' | '20' | '30' | '40'
   ): Promise<Plant[]> {
-    // TODO: type 안들어옴 확인하기
-    console.log(type);
-    return this.plantsService.getPlantsHarmfulTo(type, level);
+    return this.plantsService.getPlantsTo(type, level);
   }
 
   // 식물 추가와 해로운 영향 함께 추가
@@ -36,13 +51,6 @@ export class PlantsController {
     return this.plantsService.createPlantWithImpact(plantDto, harmful);
   }
 
-  // // 식물 추가
-  // @Post('plant')
-  // async createPlant(
-  //   @Body() plantDto: Partial<Plant>
-  // ): Promise<Plant> {
-  //   return this.plantsService.createPlant(plantDto);
-  // }
 
   // 해로운 영향 추가
   @Post('harmful')
@@ -57,9 +65,23 @@ export class PlantsController {
   @Put(':id')
   async updatePlant(
     @Param('id') id: number,
-    @Body() plantDto: Partial<Plant>,
-  ): Promise<boolean> {
+    @Body() body: {plantDto: Partial<Plant>}
+  ): Promise<string> {
+    const { plantDto } = body;
     return this.plantsService.updatePlant(id, plantDto);
+  }
+
+  // 식물관련 동물타입 정보수정
+  @Put(':id/:type')
+  async updatePet(
+    @Param('id') id: number,
+    @Param('type') type: 'cat' | 'dog',
+    @Body() body: {
+      harmful: { harmfulLevel: '00' | '10' | '20' | '30' | '40', msg: string }
+    }
+  ): Promise<string> {
+    const { harmful } = body;
+    return this.plantsService.updatePet(id, type, harmful);
   }
 }
 

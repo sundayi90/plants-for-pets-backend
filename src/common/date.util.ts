@@ -13,36 +13,8 @@ export class DateUtil {
     return {year, month, date, h, m, s, ms};
   };
 
-  static getPayDate(){
-    return moment(new Date)
-      .format("DD");
-  }
-
-  static getReserveDate = (payDate?: string, format?: string) => {
-    const now = DateUtil.getNow(new Date());
-    if(payDate){
-      return moment(new Date(`${now.year}-${now.month}-${payDate}`))
-        .add(1, 'month')
-        .format(format ?? 'YYYY-MM-DD');
-    }
-
-    return moment(new Date())
-      .add(1, 'month')
-      .format(format ?? 'YYYY-MM-DD');
-  };
-
   static getKTime = (date: any, format?: string) => {
     return moment(new Date(date))
       .format(format ?? 'YYYY-MM-DD')
   };
-
-  static isBefore7Days = (dday: Date) => {
-    const seven = moment(dday)
-      .add(7, 'days')
-      .format('YYYY-MM-DD');
-    console.log('dday: ', dday, '     dday + 7일: ', seven);
-
-    return moment(new Date()).isBefore(seven);
-
-  }
 }

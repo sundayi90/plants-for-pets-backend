@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import { Entity, ManyToOne, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, JoinColumn} from 'typeorm';
 import { Plant } from './plant.entity';
 
 @Entity('harmful')
@@ -17,6 +17,7 @@ export class Harmful {
   updatedAt: Date;
 
   @ManyToOne(() => Plant, (plant) => plant.id)
+  @JoinColumn()
   plant: Plant;
 
   @Column({

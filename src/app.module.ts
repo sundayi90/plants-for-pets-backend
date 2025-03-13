@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { mariaDBConnector } from './databases.connector';
+import { mariaDBConnector } from './common/databases.connector';
 import { Plant } from './entities/plant.entity';
 import { PlantsModule } from './plants/plants.module';
 import { Harmful } from './entities/harmful.entitiy';
