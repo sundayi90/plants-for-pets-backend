@@ -46,20 +46,19 @@ export class PlantsController {
   async createPlantWithImpact(
     @Body() body: {
       plantDto: CreatePlantDto,
-      harmful: CreateHarmfulDto[]
+      harmfulDto: CreateHarmfulDto[]
     }
   ): Promise<Plant> {
-    const { plantDto, harmful } = body;
-    return this.plantsService.createPlantWithImpact(plantDto, harmful);
+    const { plantDto, harmfulDto } = body;
+    return this.plantsService.createPlantWithImpact(plantDto, harmfulDto);
   }
 
   // 해로운 영향 추가
-  @Post('harmful')
   @UsePipes(new ValidationPipe({ transform: true }))
   async createHarmful(
-    @Body() impactDto: CreateHarmfulDto
+    @Body() harmfulDto: CreateHarmfulDto
   ): Promise<Harmful> {
-    return this.plantsService.createHarmful(impactDto);
+    return this.plantsService.createHarmful(harmfulDto);
   }
 
 
@@ -80,10 +79,10 @@ export class PlantsController {
   async updatePet(
     @Param('id') id: number,
     @Param('type') type: 'cat' | 'dog',
-    @Body() body: { harmful: UpdateHarmfulDto }
+    @Body() body: { harmfulDto: UpdateHarmfulDto }
   ): Promise<string> {
-    const { harmful } = body;
-    return this.plantsService.updatePet(id, type, harmful);
+    const { harmfulDto } = body;
+    return this.plantsService.updatePet(id, type, harmfulDto);
   }
 
   // 식물 삭제 (연관된 harmful도 자동으로 삭제됨)

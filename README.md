@@ -32,7 +32,7 @@ harmful: id, plantId, animalType, harmfulLevel, msg
     "desc": "식물정보",
     "img": "이미지 url"
   },
-  "harmful": [
+  "harmfulDto": [
     {
       "animalType": "cat",
       "harmfulLevel": "00",
@@ -60,7 +60,7 @@ harmful: id, plantId, animalType, harmfulLevel, msg
  위험도 테이블에 해당정보가 없을 경우 새로 생성. 생성시 level값은 필수
 ```
 {
-  "harmful": {
+  "harmfulDto": {
     "msg": "수정할 내용"
   }
 }

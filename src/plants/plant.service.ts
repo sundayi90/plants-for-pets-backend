@@ -54,7 +54,7 @@ export class PlantService {
    // 식물 추가와 해로운 영향 함께 추가하는 메서드
    async createPlantWithImpact(
     plantDto: Partial<Plant>, 
-    harmful: Partial<Harmful>[]
+    harmfulDto: Partial<Harmful>[]
   ): Promise<Plant> {
     const queryRunner = this.plantRepository.manager.connection.createQueryRunner();
     await queryRunner.startTransaction();
@@ -63,14 +63,14 @@ export class PlantService {
       // 1. 식물 생성
       const plant = this.plantRepository.create(plantDto);
       await queryRunner.manager.save(plant); // 식물 저장
-      console.log(harmful);
-      if(!harmful){
+      
+      if(!harmfulDto){
         await queryRunner.commitTransaction(); // 트랜잭션 커밋
         return plant; // 생성된 식물만 저장
       }
 
       // 2. 해로운 영향 추가
-      for (const impactDto of harmful) {
+      for (const impactDto of harmfulDto) {
         const harmfulImpact = this.harmfulRepository.create({
           plant,
           animalType: impactDto.animalType,
@@ -94,8 +94,8 @@ export class PlantService {
 
 
   // 해로운 영향 추가
-  async createHarmful(impactDto: Partial<Harmful>): Promise<Harmful> {
-    const harmful = this.harmfulRepository.create(impactDto);
+  async createHarmful(harmfulDto: Partial<Harmful>): Promise<Harmful> {
+    const harmful = this.harmfulRepository.create(harmfulDto);
     return this.harmfulRepository.save(harmful);
   }
 
@@ -116,9 +116,9 @@ export class PlantService {
   async updatePet(
     id: number, 
     type: 'cat' | 'dog',
-    harmful: { harmfulLevel: '00' | '10' | '20' | '30' | '40' , msg: string }
+    harmfulDto: Partial<Harmful>
   ): Promise<string> {
-    const { harmfulLevel, msg } = harmful;
+    const { harmfulLevel, msg } = harmfulDto;
     const plant = await this.getPlant(id);
     const findHarmful = await this.harmfulRepository.findOne({where: {
       plant,
