@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PlantService } from './plant.service';
 import { Plant } from 'src/entities/plant.entity';
 import { Harmful } from 'src/entities/harmful.entitiy';
+import { CreatePlantDto, UpdatePlantDto } from 'src/dto/plant.dto';
+import { CreateHarmfulDto, UpdateHarmfulDto } from 'src/dto/harmful.dto';
 
 @Controller('plants')
 export class PlantsController {
@@ -40,22 +42,22 @@ export class PlantsController {
 
   // 식물 추가와 해로운 영향 함께 추가
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true }))
   async createPlantWithImpact(
     @Body() body: {
-      plantDto: Partial<Plant>, 
-      harmful: { 
-        animalType: 'cat' | 'dog', harmfulLevel: '00' | '10' | '20' | '30' | '40', msg: string 
-    }[] }
+      plantDto: CreatePlantDto,
+      harmful: CreateHarmfulDto[]
+    }
   ): Promise<Plant> {
     const { plantDto, harmful } = body;
     return this.plantsService.createPlantWithImpact(plantDto, harmful);
   }
 
-
   // 해로운 영향 추가
   @Post('harmful')
+  @UsePipes(new ValidationPipe({ transform: true }))
   async createHarmful(
-    @Body() impactDto: Partial<Harmful>
+    @Body() impactDto: CreateHarmfulDto
   ): Promise<Harmful> {
     return this.plantsService.createHarmful(impactDto);
   }
@@ -63,25 +65,41 @@ export class PlantsController {
 
   // 식물 정보 수정
   @Put(':id')
+  @UsePipes(new ValidationPipe({ transform: true }))
   async updatePlant(
     @Param('id') id: number,
-    @Body() body: {plantDto: Partial<Plant>}
+    @Body() body: { plantDto: UpdatePlantDto }
   ): Promise<string> {
     const { plantDto } = body;
     return this.plantsService.updatePlant(id, plantDto);
-  }
+  }  
 
   // 식물관련 동물타입 정보수정
   @Put(':id/:type')
+  @UsePipes(new ValidationPipe({ transform: true }))
   async updatePet(
     @Param('id') id: number,
     @Param('type') type: 'cat' | 'dog',
-    @Body() body: {
-      harmful: { harmfulLevel: '00' | '10' | '20' | '30' | '40', msg: string }
-    }
+    @Body() body: { harmful: UpdateHarmfulDto }
   ): Promise<string> {
     const { harmful } = body;
     return this.plantsService.updatePet(id, type, harmful);
+  }
+
+  // 식물 삭제 (연관된 harmful도 자동으로 삭제됨)
+  @Delete(':id')
+  async deletePlant(
+    @Param('id') id: number
+  ): Promise<string> {
+    return this.plantsService.deletePlant(id);
+  }
+
+  // 특정 harmful 삭제
+  @Delete('harmful/:id')
+  async deleteHarmful(
+    @Param('id') id: number
+  ): Promise<string> {
+    return this.plantsService.deleteHarmful(id);
   }
 }
 

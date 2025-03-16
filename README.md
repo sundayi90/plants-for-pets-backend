@@ -1,6 +1,12 @@
 # plants-for-pets-backend
 반려동물을 위한 식물정보 backend
 
+mariaDB 테이블구조
+plant: id, name, engName, desc, img
+harmful: id, plantId, animalType, harmfulLevel, msg
+- animal type : cat | dog
+- harmful level : 00 정보없음 10 안전 20 주의 30 위험 40 심각
+
 [GET]
 - 모든 식물 정보 가져오기
 `/plants`
@@ -18,9 +24,6 @@
 [POST]
 - 신규 식물정보 추가(반려동물 영향정보까지)
 `/plants`
-
-- harmful level : 00 정보없음 10 안전 20 주의 30 위험 40 심각
-
 ```
 {
   "plantDto": {
@@ -62,3 +65,9 @@
   }
 }
 ```
+
+[DELETE]
+- 해당 식물정보 삭제 (CASCADE로 harmful테이블 관련 정보도 같이 삭제)
+`/plants/:id` 
+- 해당 해로운 영향 정보 삭제
+`/plants/harmful/:id`

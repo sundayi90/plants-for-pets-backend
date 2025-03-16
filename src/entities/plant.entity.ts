@@ -1,19 +1,8 @@
 import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
+import { Core } from './core.entity';
 
 @Entity('plant')
-export class Plant {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn(({
-    name: 'created_at',
-  }))
-  createdAt: Date;
-
-  @UpdateDateColumn(({
-    name: 'updated_at',
-  }))
-  updatedAt: Date;
+export class Plant extends Core{
 
   @Column()
   name?: string;

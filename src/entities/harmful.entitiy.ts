@@ -16,7 +16,7 @@ export class Harmful {
   }))
   updatedAt: Date;
 
-  @ManyToOne(() => Plant, (plant) => plant.id)
+  @ManyToOne(() => Plant, (plant) => plant.id, { onDelete: 'CASCADE' })
   @JoinColumn()
   plant: Plant;
 
