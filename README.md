@@ -10,6 +10,7 @@ toxic: id, plantId, petType, toxicLevel, msg
 [GET]
 - 모든 식물 정보 가져오기
 `/plants`
+`/plants?page=1&limit=5` 페이지네이션
 
 - 해당 식물 정보 가져오기
 `/plants/:id`

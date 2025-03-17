@@ -10,8 +10,11 @@ export class PlantsController {
 
   // 식물 정보 모두 가져오기
   @Get()
-  async getAll(): Promise<Plant[]> {
-    return this.plantsService.getAll();
+  async getAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<{ data: Plant[]; total: number }> {
+    return this.plantsService.getAll({ page, limit });
   }
 
   // 식물 정보 모두 가져오기

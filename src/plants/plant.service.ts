@@ -14,10 +14,23 @@ export class PlantService {
   ) {}
 
   // 모든 식물 목록 가져오기
-  async getAll(): Promise<Plant[]>{
-    return await this.plantRepository.find({ relations: ['petToxicities'] });
+  async getAll({ page, limit }): Promise<{ data: Plant[]; total: number }> {
+    const take = limit;
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.plantRepository.findAndCount({
+      relations: ['petToxicities'],  // 반려동물 정보 포함
+      take,
+      skip,
+    });
+
+    return {
+      data,
+      total,
+    };
   }
-  
+
+
   // 식물 이름으로 검색
   async search(name: string): Promise<Plant[]> {
     return await this.plantRepository.find({ 
