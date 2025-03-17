@@ -1,13 +1,15 @@
-import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn} from 'typeorm';
-import { Core } from './core.entity';
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import { PetToxicity } from './pet-toxicity.entitiy';
 
 @Entity('plant')
-export class Plant extends Core{
+export class Plant{
+  @PrimaryGeneratedColumn()
+  id: number;
 
-  @Column()
-  name?: string;
+  @Column({ unique: true })
+  name: string;
 
-  @Column({ nullable: true , name: 'eng_name'})
+  @Column({ nullable: true , unique: true, name: 'eng_name'})
   engName?: string;
 
   @Column({ nullable: true })
@@ -16,4 +18,19 @@ export class Plant extends Core{
   @Column({ nullable: true })
   img?: string;
 
+  @Column()
+  species: string;
+
+  @OneToMany(() => PetToxicity, (petToxicity) => petToxicity.plant)
+  petToxicities: PetToxicity[];
+
+  @CreateDateColumn(({
+    name: 'created_at',
+  }))
+  createdAt: Date;
+
+  @UpdateDateColumn(({
+    name: 'updated_at',
+  }))
+  updatedAt: Date;
 }

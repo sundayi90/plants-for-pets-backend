@@ -11,5 +11,5 @@ export const mariaDBConnector = (entities?) => TypeOrmModule.forRoot({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   entities,
-  synchronize: false,
+  synchronize: true,
 });
