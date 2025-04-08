@@ -12,6 +12,7 @@ export class PetToxicDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(255)
   msg?: string;
   
   @IsOptional()
@@ -27,7 +28,7 @@ export class CreateToxicDto {
   toxicLevel: '00' | '10' | '20' | '30' | '40'; // 위험 레벨
 
   @IsString()
-  @MaxLength(300)
+  @MaxLength(255)
   msg: string; // 메시지
 
   @IsOptional()

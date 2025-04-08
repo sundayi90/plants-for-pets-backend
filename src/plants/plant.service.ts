@@ -1,14 +1,16 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VerifyUtil } from 'src/common/verify.util';
-import { CreatePlantDto, UpdatePlantDto } from 'src/dto/plant.dto';
-import { PetToxicity } from 'src/entities/pet-toxicity.entitiy';
-import { Plant } from 'src/entities/plant.entity';
+import { MissingPlantService } from 'src/missing-plants/missing-plant.service';
+import { CreatePlantDto, UpdatePlantDto } from 'src/plants/dto/plant.dto';
+import { PetToxicity } from 'src/plants/entities/pet-toxicity.entity';
+import { Plant } from 'src/plants/entities/plant.entity';
 import { Like, QueryFailedError, Repository } from 'typeorm';
 
 @Injectable()
-export class PlantService {  
+export class PlantService {
   constructor(
+    private readonly missingPlantService: MissingPlantService,
     @InjectRepository(Plant) private plantRepository: Repository<Plant>,
     @InjectRepository(PetToxicity) private toxicRepository: Repository<PetToxicity>,
   ) {}
@@ -33,10 +35,16 @@ export class PlantService {
 
   // 식물 이름으로 검색
   async search(name: string): Promise<Plant[]> {
-    return await this.plantRepository.find({ 
+    const data = await this.plantRepository.find({ 
       where: VerifyUtil.isEng(name) ? {engName : Like(`%${name}%`)} : {name : Like(`%${name}%`)},
       relations: ['petToxicities'] 
     });
+
+    if (data.length === 0 && name) {
+      await this.missingPlantService.create({ searchTerm: name });
+    }
+
+    return data;
   }
 
   async filterBy(petType: string, page: number, limit: number, toxicLevel?: string): Promise<any[]> {
@@ -99,7 +107,8 @@ export class PlantService {
       if(!savedPlant) {
         return '식물정보 생성에 실패했습니다.';
       }
-      return '식물정보 생성에 성공했습니다.';
+      const missing = await this.missingPlantService.remove(plantData.name);
+      return `식물정보 생성에 성공했습니다. 유저검색기록목록: ${missing}`;
 
     } catch (error) {
       if(error.code == "ER_DUP_ENTRY") {
@@ -141,7 +150,6 @@ export class PlantService {
     if (!plant) {
       throw new NotFoundException('해당 식물이 존재하지 않습니다.');
     }
-
     // 식물 삭제 (연관된 Toxic은 CASCADE로 자동 삭제됨)
     await this.plantRepository.remove(plant);
     return '식물이 성공적으로 삭제되었습니다.';

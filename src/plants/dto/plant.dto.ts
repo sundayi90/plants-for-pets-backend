@@ -17,7 +17,7 @@ export class CreatePlantDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(300)
+  @MaxLength(600)
   desc?: string;
 
   @IsNotEmpty()

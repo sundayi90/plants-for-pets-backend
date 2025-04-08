@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { PlantService } from './plant.service';
-import { Plant } from 'src/entities/plant.entity';
-import { CreatePlantDto, UpdatePlantDto } from 'src/dto/plant.dto';
-import { PetToxicDto } from 'src/dto/pet-toxicity.dto';
+import { Plant } from 'src/plants/entities/plant.entity';
+import { CreatePlantDto, UpdatePlantDto } from 'src/plants/dto/plant.dto';
+import { PetToxicDto } from 'src/plants/dto/pet-toxicity.dto';
 
 @Controller('plants')
 export class PlantsController {
@@ -52,7 +52,6 @@ export class PlantsController {
   ): Promise<string> {
     return this.plantsService.createPlant(createPlantDto);
   }
-
 
   // 식물 정보 수정
   @Patch(':id')

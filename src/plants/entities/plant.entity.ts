@@ -1,5 +1,5 @@
 import { Entity, Column, OneToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
-import { PetToxicity } from './pet-toxicity.entitiy';
+import { PetToxicity } from './pet-toxicity.entity';
 
 @Entity('plant')
 export class Plant{
