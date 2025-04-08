@@ -34,12 +34,14 @@ export class PlantsController {
   }
   
   // 해당 동물의 식물목록 가져오기
-  @Get('to/:type')
-  async getPlantsTo(
-    @Param('type') type: 'cat' | 'dog',
+  @Get('filter/:type')
+  async filterBy(
+    @Param('type') type: 'cat' | 'dog' | 'both',
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
     @Query('level') level?: '00' | '10' | '20' | '30' | '40'
-  ): Promise<Plant[]> {
-    return this.plantsService.filterByPetType(type, level);
+  ): Promise<any[]> {
+    return this.plantsService.filterBy(type, page-1, limit, level);
   }
 
   // 식물 추가와 해로운 영향 함께 추가

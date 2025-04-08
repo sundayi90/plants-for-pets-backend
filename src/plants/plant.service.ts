@@ -39,7 +39,15 @@ export class PlantService {
     });
   }
 
-  async filterByPetType(petType: string, toxicLevel?: string): Promise<Plant[]> {
+  async filterBy(petType: string, page: number, limit: number, toxicLevel?: string): Promise<any[]> {
+    if(petType == 'both' && toxicLevel != null) {
+      const query=  await this.plantRepository.createQueryBuilder('plant')
+      .leftJoinAndSelect('plant.petToxicities', 'petToxicity')
+      .where('petToxicity.toxicLevel = :toxicLevel', { toxicLevel }).getMany();
+      
+      return this.division(query, limit, page);
+    }
+
     const query = this.plantRepository.createQueryBuilder('plant')
       .leftJoinAndSelect('plant.petToxicities', 'petToxicity')
       .where('petToxicity.petType = :petType', { petType });
@@ -48,8 +56,22 @@ export class PlantService {
       query.andWhere('petToxicity.toxicLevel = :toxicLevel', { toxicLevel });
     }
 
-    return await query.getMany();
+    return this.division(await query.getMany(), limit, page);
+
+    // return await query.getMany();
   }  
+
+  private division = (array: Plant[], n: number, p: number) => {
+    const len = array.length;
+    const cnt = Math.floor(len / n);
+    const tmp : any[] = [];
+
+    for (let i = 0; i <= cnt; i++) {
+      tmp.push(array.splice(0, n));
+    }
+
+    return tmp[p];
+  };
 
   // 해당 식물 가져오기
   async getPlant(id: number): Promise<Plant> {
