@@ -6,6 +6,7 @@ import { CreatePlantDto, UpdatePlantDto } from 'src/plants/dto/plant.dto';
 import { PetToxicity } from 'src/plants/entities/pet-toxicity.entity';
 import { Plant } from 'src/plants/entities/plant.entity';
 import { Like, QueryFailedError, Repository } from 'typeorm';
+import { ResultDto } from './dto/result.dto';
 
 @Injectable()
 export class PlantService {
@@ -90,7 +91,7 @@ export class PlantService {
     return plant;
   }
 
-  async createPlant(createPlantDto: CreatePlantDto): Promise<string> {
+  async createPlant(createPlantDto: CreatePlantDto): Promise<ResultDto> {
     const { petToxicities, ...plantData } = createPlantDto;
     const plant = this.plantRepository.create(plantData);
     try {
@@ -105,46 +106,43 @@ export class PlantService {
       }
   
       if(!savedPlant) {
-        return '식물정보 생성에 실패했습니다.';
+        return {result: 'fail', msg: '식물정보 생성에 실패했습니다.'};
       }
       const missing = await this.missingPlantService.remove(plantData.name);
-      return `식물정보 생성에 성공했습니다. 유저검색기록목록: ${missing}`;
+      return {result: 'success', msg:'식물정보 생성에 성공했습니다.', missing: missing};
 
     } catch (error) {
-      if(error.code == "ER_DUP_ENTRY") {
-        return `[${error.code}] -- ${error.sqlMessage}`;
-      }
-      return error;
+      return {result: error.code, msg: error.sqlMessage};
     }
   }
 
-  async updatePlant(id: number, updatePlantDto: UpdatePlantDto) {
+  async updatePlant(id: number, updatePlantDto: UpdatePlantDto): Promise<ResultDto> {
     const { ...plantData } = updatePlantDto;
     await this.plantRepository.update(id, plantData);
     const updatedPlant = await this.plantRepository.findOne({ where: { id }, relations: ['petToxicities'] });
 
     if(!updatedPlant) {
-      return '식물정보 수정에 실패했습니다.';
+      return {result: 'fail', msg:'식물정보 수정에 실패했습니다.'};
     }
-    return '식물정보 수정에 성공했습니다.';
+    return {result: 'success', msg:'식물정보 수정에 성공했습니다.'};
   }
 
   // 식물관련 동물타입 정보수정
   async updatePet(
     id: number, 
     petToxicDto: Partial<PetToxicity>
-  ): Promise<string> {
+  ): Promise<ResultDto> {
     const petUpdate = await this.toxicRepository.update(id, petToxicDto);
 
     if(!petUpdate.affected) {
-      return '해당정보 수정에 실패했습니다.';
+      return {result: 'fail', msg:'해당정보 수정에 실패했습니다.'};
     }
-    return '해당정보 수정에 성공했습니다.';
+    return {result: 'success', msg:'해당정보 수정에 성공했습니다.'};
   }
 
 
   // 식물 삭제 (연관된 Toxic도 자동으로 삭제됨)
-  async deletePlant(id: number): Promise<string> {
+  async deletePlant(id: number): Promise<ResultDto> {
     const plant = await this.plantRepository.findOne({ where: { id } });
 
     if (!plant) {
@@ -152,11 +150,11 @@ export class PlantService {
     }
     // 식물 삭제 (연관된 Toxic은 CASCADE로 자동 삭제됨)
     await this.plantRepository.remove(plant);
-    return '식물이 성공적으로 삭제되었습니다.';
+    return {result: 'success', msg:'식물이 성공적으로 삭제되었습니다.'};
   }
 
   // 특정 Toxic 삭제
-  async deleteToxic(id: number): Promise<string> {
+  async deleteToxic(id: number): Promise<ResultDto> {
     const Toxic = await this.toxicRepository.findOne({ where: { id } });
 
     if (!Toxic) {
@@ -165,7 +163,7 @@ export class PlantService {
 
     // Toxic 삭제
     await this.toxicRepository.remove(Toxic);
-    return '해로운 정보가 성공적으로 삭제되었습니다.';
+    return {result: 'success', msg:'해로운 정보가 성공적으로 삭제되었습니다.'};
   }
 
 }

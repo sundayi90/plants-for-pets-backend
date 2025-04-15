@@ -3,6 +3,7 @@ import { PlantService } from './plant.service';
 import { Plant } from 'src/plants/entities/plant.entity';
 import { CreatePlantDto, UpdatePlantDto } from 'src/plants/dto/plant.dto';
 import { PetToxicDto } from 'src/plants/dto/pet-toxicity.dto';
+import { ResultDto } from './dto/result.dto';
 
 @Controller('plants')
 export class PlantsController {
@@ -49,7 +50,7 @@ export class PlantsController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async createPlant(
     @Body() createPlantDto: CreatePlantDto
-  ): Promise<string> {
+  ): Promise<ResultDto> {
     return this.plantsService.createPlant(createPlantDto);
   }
 
@@ -59,7 +60,7 @@ export class PlantsController {
   async updatePlant(
     @Param('id') id: number,
     @Body() updatePlantDto: UpdatePlantDto
-  ): Promise<string> {
+  ): Promise<ResultDto> {
     return this.plantsService.updatePlant(id, updatePlantDto);
   }  
 
@@ -69,7 +70,7 @@ export class PlantsController {
   async updatePet(
     @Param('id') id: number,
     @Body() petToxicDto: PetToxicDto
-  ): Promise<string> {
+  ): Promise<ResultDto> {
     return this.plantsService.updatePet(id, petToxicDto);
   }   
 
@@ -77,7 +78,7 @@ export class PlantsController {
   @Delete(':id')
   async deletePlant(
     @Param('id') id: number
-  ): Promise<string> {
+  ): Promise<ResultDto> {
     return this.plantsService.deletePlant(id);
   }
 
@@ -85,7 +86,7 @@ export class PlantsController {
   @Delete('toxic/:id')
   async deleteToxic(
     @Param('id') id: number
-  ): Promise<string> {
+  ): Promise<ResultDto> {
     return this.plantsService.deleteToxic(id);
   }
 }
